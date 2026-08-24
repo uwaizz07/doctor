@@ -55,19 +55,70 @@
 
     let patients = [];
 
+    function esc(s) {
+      return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
     async function init() {
       const user = await getCurrentUser();
       if (!user) { window.location.href = '/login.html'; return; }
       const profile = await getProfile(user.id);
       if (!profile || (profile.role !== 'doctor' && profile.role !== 'admin')) { window.location.href = '/'; return; }
 
-      const { data } = await supabase.from('profiles').select('*').eq('role', 'patient').order('created_at', { ascending: false });
-      patients = data || [];
+      const [{ data: profiles }, { data: appts }] = await Promise.all([
+        supabase.from('profiles').select('*').eq('role', 'patient').order('created_at', { ascending: false }),
+        supabase.from('appointments').select('id, patient_id, patient_name, patient_phone, patient_notes, appointment_date, status, created_at').order('appointment_date', { ascending: false }),
+      ]);
+
+      const map = new Map();
+
+      for (const a of appts || []) {
+        const key = a.patient_id ? `reg:${a.patient_id}` : `guest:${(a.patient_phone || '').trim() || a.id}`;
+        let p = map.get(key);
+        if (!p) {
+          p = { key, name: '', phone: '', notes: '', visits: 0, lastVisit: null, registered: false, createdAt: a.created_at };
+          map.set(key, p);
+        }
+        if (a.status !== 'cancelled' && a.status !== 'no_show') p.visits++;
+        if (!p.lastVisit || a.appointment_date > p.lastVisit) p.lastVisit = a.appointment_date;
+        if (a.patient_id) p.registered = true;
+        const bookingName = (a.patient_name || '').trim();
+        if (bookingName && (!p.name || p.name === 'Unknown')) p.name = bookingName;
+        if (!p.phone && a.patient_phone) p.phone = a.patient_phone;
+        const note = (a.patient_notes || '').trim();
+        if (note && !p.notes) p.notes = note;
+      }
+
+      for (const pr of profiles || []) {
+        const key = `reg:${pr.id}`;
+        let p = map.get(key);
+        if (!p) {
+          p = { key, name: '', phone: '', notes: '', visits: 0, lastVisit: null, registered: true, createdAt: pr.created_at };
+          map.set(key, p);
+        }
+        p.registered = true;
+        if (pr.full_name && (!p.name || p.name === 'Unknown')) p.name = pr.full_name;
+        if (!p.phone && pr.phone) p.phone = pr.phone;
+        p.username = pr.username;
+        p.email = pr.email;
+      }
+
+      patients = [...map.values()];
+      patients.sort((x, y) => {
+        const t = (v) => v.lastVisit || '';
+        if (t(x) !== t(y)) return t(y).localeCompare(t(x));
+        return (y.createdAt || '').localeCompare(x.createdAt || '');
+      });
       renderPatients(patients);
 
       document.getElementById('search-input').addEventListener('input', (e) => {
         const q = e.target.value.toLowerCase();
-        const filtered = patients.filter(p => (p.full_name || '').toLowerCase().includes(q) || (p.email || '').toLowerCase().includes(q) || (p.username || '').toLowerCase().includes(q));
+        const filtered = patients.filter(p =>
+          (p.name || '').toLowerCase().includes(q) ||
+          (p.phone || '').toLowerCase().includes(q) ||
+          (p.notes || '').toLowerCase().includes(q) ||
+          (p.email || '').toLowerCase().includes(q)
+        );
         renderPatients(filtered);
       });
     }
@@ -75,21 +126,31 @@
     function renderPatients(list) {
       const container = document.getElementById('patients-list');
       if (!list.length) { container.innerHTML = '<div class="card p-8 text-center text-gray-500">No patients found.</div>'; return; }
-      container.innerHTML = list.map(p => `
+      container.innerHTML = list.map(p => {
+        const name = p.name || 'Unknown';
+        const badge = p.registered
+          ? '<span class="px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">Registered</span>'
+          : '<span class="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Guest</span>';
+        return `
         <div class="card p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center flex-shrink-0">
-            <span class="text-sm font-medium text-blue-600">${(p.full_name || 'P')[0].toUpperCase()}</span>
+            <span class="text-sm font-medium text-blue-600">${esc(name[0] || 'P').toUpperCase()}</span>
           </div>
           <div class="flex-1 min-w-0">
-            <div class="font-medium text-gray-900">${p.full_name || 'Unknown'}</div>
-            <div class="text-sm text-gray-500">${p.email || ''} &middot; @${p.username || ''}</div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-medium text-gray-900">${esc(name)}</span>
+              ${badge}
+            </div>
+            ${p.notes ? `<div class="text-sm text-gray-600 mt-1"><span class="text-gray-400">Described:</span> ${esc(p.notes)}</div>` : ''}
+            ${p.email ? `<div class="text-xs text-gray-400 mt-0.5">${esc(p.email)}${p.username ? ` &middot; @${esc(p.username)}` : ''}</div>` : ''}
           </div>
-          <div class="text-right">
-            <div class="text-sm text-gray-500">${p.phone || '-'}</div>
-            <div class="text-xs text-gray-400">Joined ${formatDate(p.created_at?.split('T')[0])}</div>
+          <div class="text-right flex-shrink-0">
+            <div class="text-sm text-gray-500">${esc(p.phone || '-')}</div>
+            <div class="text-xs text-gray-400 mt-0.5">${p.visits} visit${p.visits === 1 ? '' : 's'}${p.lastVisit ? ` &middot; Last ${formatDate(p.lastVisit)}` : ''}</div>
           </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
     }
 
     init();
