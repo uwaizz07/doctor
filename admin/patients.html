@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patients | Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif']},colors:{primary:{50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a'}}}}}</script>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🩺</text></svg>">
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex">
+  <aside id="sidebar" class="fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-gray-100 z-40 hidden lg:flex flex-col">
+    <div class="p-5 border-b border-gray-100">
+      <a href="/" class="flex items-center gap-2"><div class="w-9 h-9 rounded-xl gradient-primary flex items-center justify-center"><svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div><div class="text-sm font-bold text-gray-900">Dr. Arshadha</div><div class="text-xs text-gray-500">Admin Panel</div></div></a>
+    </div>
+    <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+      <a href="/admin/index.html" class="sidebar-link"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Overview</a>
+      <a href="/admin/appointments.html" class="sidebar-link"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/></svg>Appointments</a>
+      <a href="/admin/patients.html" class="sidebar-link active"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Patients</a>
+      <a href="/admin/schedule.html" class="sidebar-link"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Schedule</a>
+      <a href="/admin/services.html" class="sidebar-link"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>Services</a>
+      <a href="/admin/payments.html" class="sidebar-link"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/></svg>Payments</a>
+      <hr class="my-3 border-gray-100"><button onclick="import('/js/auth.js').then(m => m.logoutUser())" class="sidebar-link w-full text-gray-500 hover:text-red-600">Logout</button>
+    </nav>
+  </aside>
+  <div class="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-100 z-30 lg:hidden flex items-center justify-between px-4">
+    <span class="font-bold text-gray-900">Patients</span>
+    <button id="sidebar-toggle" class="p-2 rounded-lg hover:bg-gray-100" aria-label="Menu"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  </div>
+
+  <div class="flex-1 lg:ml-64">
+    <div class="p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 max-w-7xl mx-auto">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Patients</h1>
+        <input type="text" id="search-input" class="input-field text-sm py-2 w-full sm:w-64" placeholder="Search patients...">
+      </div>
+      <div id="patients-list" class="space-y-3"></div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="fixed top-4 right-4 z-[9999] flex flex-col gap-2"></div>
+
+  <script type="module">
+    import { supabase, getCurrentUser, getProfile } from '/js/supabase.js';
+    import { showToast, formatDate } from '/js/ui.js';
+
+    document.getElementById('sidebar-toggle')?.addEventListener('click', () => {
+      const s = document.getElementById('sidebar'); s.classList.toggle('hidden'); s.classList.toggle('fixed'); s.classList.toggle('inset-0'); s.classList.toggle('z-50'); s.classList.toggle('w-full');
+    });
+
+    let patients = [];
+
+    async function init() {
+      const user = await getCurrentUser();
+      if (!user) { window.location.href = '/login.html'; return; }
+      const profile = await getProfile(user.id);
+      if (!profile || (profile.role !== 'doctor' && profile.role !== 'admin')) { window.location.href = '/'; return; }
+
+      const { data } = await supabase.from('profiles').select('*').eq('role', 'patient').order('created_at', { ascending: false });
+      patients = data || [];
+      renderPatients(patients);
+
+      document.getElementById('search-input').addEventListener('input', (e) => {
+        const q = e.target.value.toLowerCase();
+        const filtered = patients.filter(p => (p.full_name || '').toLowerCase().includes(q) || (p.email || '').toLowerCase().includes(q) || (p.username || '').toLowerCase().includes(q));
+        renderPatients(filtered);
+      });
+    }
+
+    function renderPatients(list) {
+      const container = document.getElementById('patients-list');
+      if (!list.length) { container.innerHTML = '<div class="card p-8 text-center text-gray-500">No patients found.</div>'; return; }
+      container.innerHTML = list.map(p => `
+        <div class="card p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center flex-shrink-0">
+            <span class="text-sm font-medium text-blue-600">${(p.full_name || 'P')[0].toUpperCase()}</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="font-medium text-gray-900">${p.full_name || 'Unknown'}</div>
+            <div class="text-sm text-gray-500">${p.email || ''} &middot; @${p.username || ''}</div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm text-gray-500">${p.phone || '-'}</div>
+            <div class="text-xs text-gray-400">Joined ${formatDate(p.created_at?.split('T')[0])}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    init();
+  </script>
+</body>
+</html>

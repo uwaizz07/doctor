@@ -1,0 +1,16 @@
+{
+  "name": "dr-arshadha-appointments",
+  "version": "1.0.0",
+  "description": "Premium doctor appointment booking platform for Dr. Arshadha",
+  "scripts": {
+    "dev": "npx vite",
+    "build": "npx vite build",
+    "preview": "npx vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.112.3"
+  }
+}

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Dr. Arshadha | Arshadha Medical Clinic</title>
+  <meta name="description" content="Learn about Dr. Arshadha's approach to patient care at Arshadha Medical Clinic.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }, colors: { primary: { 50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' } } } } }
+  </script>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🩺</text></svg>">
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+  <nav class="fixed top-0 left-0 right-0 z-50 glass-card-strong border-b border-gray-100/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="/" class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-xl gradient-primary flex items-center justify-center"><svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <span class="text-lg font-bold text-gray-900 hidden sm:block">Dr. Arshadha</span>
+        </a>
+        <div class="hidden md:flex items-center gap-8">
+          <a href="/" class="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">Home</a>
+          <a href="/about.html" class="text-sm font-medium text-blue-600">About</a>
+          <a href="/services.html" class="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">Services</a>
+          <a href="/book.html" class="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">Book Appointment</a>
+          <a href="/contact.html" class="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
+        </div>
+        <div id="nav-auth" class="hidden md:flex items-center gap-3">
+          <a href="/book.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">Book Now</a>
+        </div>
+        <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-gray-100" aria-label="Open menu">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="mobile-menu" class="mobile-menu fixed top-16 left-0 right-0 bottom-0 bg-white z-50 md:hidden">
+      <div class="p-4 space-y-1">
+        <a href="/" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-xl font-medium">Home</a>
+        <a href="/about.html" class="block px-4 py-3 bg-blue-50 text-blue-600 rounded-xl font-medium">About</a>
+        <a href="/services.html" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-xl font-medium">Services</a>
+        <a href="/book.html" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-xl font-medium">Book Appointment</a>
+        <a href="/contact.html" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-xl font-medium">Contact</a>
+        <hr class="my-3 border-gray-200">
+        <div id="nav-auth-mobile">
+          <a href="/book.html" class="block px-4 py-3 bg-blue-600 text-white rounded-xl text-center font-medium mt-2">Book Appointment</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-1 pt-16">
+    <section class="py-20 gradient-mesh">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+          <div class="animate-fade-in">
+            <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">About <span class="text-gradient">Dr. Arshadha</span></h1>
+            <p class="text-lg text-gray-600 mb-6 leading-relaxed">
+              Dedicated to providing compassionate, evidence-based healthcare with a focus on patient well-being and long-term health outcomes.
+            </p>
+            <p class="text-gray-600 leading-relaxed mb-8">
+              At Arshadha Medical Clinic, we believe in treating the whole person, not just the symptoms. Our approach combines modern medical knowledge with genuine care for each patient's unique health journey.
+            </p>
+            <a href="/book.html" class="btn-primary inline-flex items-center gap-2">
+              Book a Consultation
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+          <div class="flex justify-center">
+            <div class="w-72 h-72 sm:w-80 sm:h-80 rounded-3xl gradient-primary flex items-center justify-center shadow-2xl shadow-blue-600/20">
+              <svg class="w-36 h-36 text-white/90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="card p-6 text-center">
+            <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <svg class="w-7 h-7 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Patient-First Approach</h3>
+            <p class="text-gray-500 text-sm">Every decision is made with the patient's best interest as the top priority. Your health concerns are heard and addressed with care.</p>
+          </div>
+          <div class="card p-6 text-center">
+            <div class="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <svg class="w-7 h-7 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Evidence-Based Medicine</h3>
+            <p class="text-gray-500 text-sm">Treatment plans grounded in the latest medical research and clinical evidence for optimal outcomes.</p>
+          </div>
+          <div class="card p-6 text-center">
+            <div class="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <svg class="w-7 h-7 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Holistic Wellness</h3>
+            <p class="text-gray-500 text-sm">Comprehensive care that considers physical, mental, and lifestyle factors for complete well-being.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 gradient-mesh">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6">Areas of Expertise</h2>
+        <p class="text-gray-600 mb-8">Comprehensive healthcare services covering a wide range of medical needs</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div class="bg-white rounded-xl p-4 text-sm font-medium text-gray-700 border border-gray-100">General Medicine</div>
+          <div class="bg-white rounded-xl p-4 text-sm font-medium text-gray-700 border border-gray-100">Preventive Care</div>
+          <div class="bg-white rounded-xl p-4 text-sm font-medium text-gray-700 border border-gray-100">Chronic Disease Management</div>
+          <div class="bg-white rounded-xl p-4 text-sm font-medium text-gray-700 border border-gray-100">Health Screenings</div>
+          <div class="bg-white rounded-xl p-4 text-sm font-medium text-gray-700 border border-gray-100">Minor Procedures</div>
+          <div class="bg-white rounded-xl p-4 text-sm font-medium text-gray-700 border border-gray-100">Women's Health</div>
+          <div class="bg-white rounded-xl p-4 text-sm font-medium text-gray-700 border border-gray-100">Pediatric Care</div>
+          <div class="bg-white rounded-xl p-4 text-sm font-medium text-gray-700 border border-gray-100">Geriatric Care</div>
+        </div>
+        <p class="text-xs text-gray-400 mt-4">* This is editable placeholder content. Actual areas of expertise should be updated by the clinic administrator.</p>
+      </div>
+    </section>
+
+    <section class="py-20 bg-white">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">About the Clinic</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto mb-8">
+          Arshadha Medical Clinic is designed to provide a comfortable, modern, and welcoming environment for all patients. Our clinic features state-of-the-art facilities to ensure the highest standard of care.
+        </p>
+        <div class="grid sm:grid-cols-3 gap-6">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-blue-600 mb-1">Modern</div>
+            <div class="text-sm text-gray-500">Updated Equipment</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-blue-600 mb-1">Hygienic</div>
+            <div class="text-sm text-gray-500">Clean & Safe Space</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-blue-600 mb-1">Accessible</div>
+            <div class="text-sm text-gray-500">Easy to Reach Location</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="gradient-primary rounded-3xl p-8 sm:p-12 text-center text-white">
+          <h2 class="text-3xl font-bold mb-4">Start Your Health Journey</h2>
+          <p class="text-blue-100 mb-8">Schedule a consultation and take the first step toward better health.</p>
+          <a href="/book.html" class="bg-white text-blue-600 px-8 py-3 rounded-xl font-semibold hover:bg-blue-50 transition-colors inline-flex items-center gap-2">
+            Book Appointment
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-gray-900 text-gray-400 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-sm">&copy; 2026 Dr. Arshadha. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { supabase, getProfile } from '/js/supabase.js';
+    import { updateNavAuth } from '/js/ui.js';
+    document.getElementById('mobile-menu-btn')?.addEventListener('click', () => document.getElementById('mobile-menu')?.classList.toggle('open'));
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) { const p = await getProfile(session.user.id); updateNavAuth(session.user, p); }
+  </script>
+</body>
+</html>

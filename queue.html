@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Token & Queue Status | Dr. Arshadha</title>
+  <meta name="description" content="Check your appointment token number and live queue status.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif']},colors:{primary:{50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a'}}}}}</script>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🩺</text></svg">
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+  <nav class="fixed top-0 left-0 right-0 z-50 glass-card-strong border-b border-gray-100/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="/" class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-xl gradient-primary flex items-center justify-center"><svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <span class="text-lg font-bold text-gray-900 hidden sm:block">Dr. Arshadha</span>
+        </a>
+        <a href="/book.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">Book Appointment</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-1 pt-16">
+    <section class="py-10 gradient-mesh">
+      <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Queue Status</h1>
+        <p class="text-gray-600">Track your token and see how many patients the doctor has attended</p>
+      </div>
+    </section>
+
+    <section class="py-8 sm:py-10">
+      <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Lookup -->
+        <div class="glass-card-strong rounded-2xl p-6 sm:p-8 mb-6">
+          <label for="ref-input" class="block text-sm font-medium text-gray-700 mb-1.5">Booking Reference</label>
+          <p class="text-xs text-gray-500 mb-3">Paste the reference ID from your booking confirmation.</p>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <input type="text" id="ref-input" class="input-field font-mono flex-1" placeholder="e.g. 3F2A9C81...">
+            <button id="check-btn" class="btn-primary whitespace-nowrap">Check Status</button>
+          </div>
+          <p id="lookup-error" class="text-red-500 text-sm mt-3 hidden"></p>
+        </div>
+
+        <!-- Status -->
+        <div id="status-card" class="hidden glass-card-strong rounded-2xl p-6 sm:p-8">
+          <div id="status-content"></div>
+        </div>
+
+        <p class="text-center text-xs text-gray-400 mt-6">This page updates automatically every 15 seconds.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-gray-900 text-gray-400 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-sm">&copy; 2026 Dr. Arshadha. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <div id="toast-container" class="fixed top-4 right-4 z-[9999] flex flex-col gap-2"></div>
+
+  <script type="module">
+    import { getQueueStatus } from '/js/appointments.js';
+    import { showToast, formatDate, formatTime } from '/js/ui.js';
+
+    const LAST_REF_KEY = 'last_booking_ref';
+    const REFRESH_MS = 15000;
+    let refId = null;
+    let timer = null;
+
+    const refInput = document.getElementById('ref-input');
+    const checkBtn = document.getElementById('check-btn');
+    const lookupError = document.getElementById('lookup-error');
+    const statusCard = document.getElementById('status-card');
+    const statusContent = document.getElementById('status-content');
+
+    const params = new URLSearchParams(window.location.search);
+    refId = params.get('ref') || localStorage.getItem(LAST_REF_KEY) || '';
+    if (refId) {
+      refInput.value = refId;
+      loadStatus();
+    }
+
+    checkBtn.addEventListener('click', () => {
+      const val = refInput.value.trim();
+      if (!val) { showError('Please enter your booking reference ID.'); return; }
+      refId = val;
+      localStorage.setItem(LAST_REF_KEY, val);
+      history.replaceState(null, '', `?ref=${encodeURIComponent(val)}`);
+      loadStatus();
+    });
+
+    refInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') checkBtn.click(); });
+
+    function showError(msg) {
+      lookupError.textContent = msg;
+      lookupError.classList.remove('hidden');
+    }
+
+    async function loadStatus() {
+      if (!refId) return;
+      lookupError.classList.add('hidden');
+      checkBtn.disabled = true;
+
+      const result = await getQueueStatus(refId);
+
+      checkBtn.disabled = false;
+
+      if (result.error) {
+        statusCard.classList.add('hidden');
+        showError(result.error);
+        return;
+      }
+
+      renderStatus(result);
+      scheduleRefresh();
+    }
+
+    function scheduleRefresh() {
+      clearTimeout(timer);
+      timer = setTimeout(loadStatus, REFRESH_MS);
+    }
+
+    function renderStatus(q) {
+      const attended = q.attended_count ?? 0;
+      const ahead = q.ahead_count ?? 0;
+      const isDone = q.status === 'completed';
+      const isCancelled = q.status === 'cancelled' || q.status === 'no_show';
+      const statusLabels = {
+        pending: ['Pending', 'bg-amber-100', 'text-amber-800'],
+        confirmed: ['Confirmed', 'bg-blue-100', 'text-blue-800'],
+        completed: ['Completed', 'bg-green-100', 'text-green-800'],
+        cancelled: ['Cancelled', 'bg-red-100', 'text-red-800'],
+        rescheduled: ['Rescheduled', 'bg-purple-100', 'text-purple-800'],
+        no_show: ['No Show', 'bg-gray-100', 'text-gray-800']
+      };
+      const [statusLabel, statusBg, statusText] = statusLabels[q.status] || statusLabels.pending;
+
+      let banner = '';
+      if (isDone) {
+        banner = `<div class="mt-6 rounded-xl bg-green-50 border border-green-200 p-4 text-sm text-green-800 font-medium text-center">The doctor has attended your token. Get well soon!</div>`;
+      } else if (isCancelled) {
+        banner = `<div class="mt-6 rounded-xl bg-red-50 border border-red-200 p-4 text-sm text-red-700 font-medium text-center">This appointment is ${statusLabel.toLowerCase()}. Please book again to get a new token.</div>`;
+      } else if (ahead === 0) {
+        banner = `<div class="mt-6 rounded-xl bg-green-50 border border-green-200 p-4 text-sm text-green-800 font-medium text-center">You are next! Please be ready.</div>`;
+      } else {
+        banner = `<div class="mt-6 rounded-xl bg-blue-50 border border-blue-200 p-4 text-sm text-blue-800 text-center">Doctor attended <span class="font-semibold">${attended}</span> token${attended === 1 ? '' : 's'} &middot; Now serving <span class="font-mono font-bold">#${q.current_serving_token ?? '-'}</span> &middot; <span class="font-semibold">${ahead}</span> patient${ahead === 1 ? '' : 's'} ahead of you</div>`;
+      }
+
+      const servingHtml = !isDone && !isCancelled
+        ? `<p class="text-center text-sm text-gray-500 mt-5 mb-1">Now Serving: <span class="font-mono font-bold text-blue-700">${q.current_serving_token != null ? '#' + q.current_serving_token : '-'}</span></p>`
+        : '';
+
+      statusContent.innerHTML = `
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="rounded-2xl gradient-primary p-6 text-white text-center flex flex-col items-center justify-center">
+            <div class="text-xs uppercase tracking-widest text-blue-100 mb-1">Your Token</div>
+            <div class="text-6xl font-extrabold leading-none">#${q.token_number ?? '-'}</div>
+          </div>
+          <div class="rounded-2xl bg-white border border-gray-100 p-6 text-center flex flex-col items-center justify-center">
+            <div class="text-xs uppercase tracking-widest text-gray-400 mb-1">Tokens Attended by Doctor</div>
+            <div class="text-6xl font-extrabold leading-none text-emerald-600">${attended}</div>
+            <div class="flex items-center gap-1.5 mt-2 text-xs text-gray-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Live
+            </div>
+          </div>
+        </div>
+        ${servingHtml}
+        ${banner}
+        <div class="mt-6 space-y-2 text-sm">
+          <div class="flex justify-between"><span class="text-gray-500">Date</span><span class="font-medium text-gray-900">${q.appointment_date ? formatDate(q.appointment_date) : '-'}</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Time</span><span class="font-medium text-gray-900">${q.appointment_time ? formatTime(q.appointment_time) : '-'}</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Status</span><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusBg} ${statusText}">${statusLabel}</span></div>
+        </div>
+      `;
+      statusCard.classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>

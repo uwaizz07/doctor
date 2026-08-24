@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Appointment | Dr. Arshadha</title>
+  <meta name="description" content="Book your appointment with Dr. Arshadha online. Choose your service, date, and time.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif']},colors:{primary:{50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a'}}}}}</script>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🩺</text></svg>">
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+  <nav class="fixed top-0 left-0 right-0 z-50 glass-card-strong border-b border-gray-100/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="/" class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-xl gradient-primary flex items-center justify-center"><svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <span class="text-lg font-bold text-gray-900 hidden sm:block">Dr. Arshadha</span>
+        </a>
+        <div class="hidden md:flex items-center gap-8">
+          <a href="/" class="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">Home</a>
+          <a href="/about.html" class="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">About</a>
+          <a href="/services.html" class="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">Services</a>
+          <a href="/book.html" class="text-sm font-medium text-blue-600">Book Appointment</a>
+          <a href="/contact.html" class="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
+        </div>
+        <div id="nav-auth" class="hidden md:flex items-center gap-3"></div>
+        <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-gray-100" aria-label="Open menu">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="mobile-menu" class="mobile-menu fixed top-16 left-0 right-0 bottom-0 bg-white z-50 md:hidden">
+      <div class="p-4 space-y-1">
+        <a href="/" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-xl font-medium">Home</a>
+        <a href="/about.html" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-xl font-medium">About</a>
+        <a href="/services.html" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-xl font-medium">Services</a>
+        <a href="/book.html" class="block px-4 py-3 bg-blue-50 text-blue-600 rounded-xl font-medium">Book Appointment</a>
+        <a href="/contact.html" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-xl font-medium">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-1 pt-16">
+    <section class="py-12 gradient-mesh">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Book an Appointment</h1>
+        <p class="text-gray-600">Schedule your consultation with Dr. Arshadha</p>
+      </div>
+    </section>
+
+    <section class="py-8 sm:py-12">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Progress Steps -->
+        <div class="flex items-center justify-between mb-8 overflow-x-auto pb-2">
+          <div class="flex items-center gap-1 sm:gap-2 min-w-max">
+            <div class="step-indicator active flex items-center gap-1 sm:gap-2" data-step="1">
+              <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold">1</div>
+              <span class="text-sm font-medium text-blue-600 hidden sm:block">Service</span>
+            </div>
+            <div class="w-6 sm:w-12 h-0.5 bg-gray-200 step-line" data-line="1"></div>
+            <div class="step-indicator flex items-center gap-1 sm:gap-2" data-step="2">
+              <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-sm font-semibold">2</div>
+              <span class="text-sm font-medium text-gray-400 hidden sm:block">Date</span>
+            </div>
+            <div class="w-6 sm:w-12 h-0.5 bg-gray-200 step-line" data-line="2"></div>
+            <div class="step-indicator flex items-center gap-1 sm:gap-2" data-step="3">
+              <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-sm font-semibold">3</div>
+              <span class="text-sm font-medium text-gray-400 hidden sm:block">Time</span>
+            </div>
+            <div class="w-6 sm:w-12 h-0.5 bg-gray-200 step-line" data-line="3"></div>
+            <div class="step-indicator flex items-center gap-1 sm:gap-2" data-step="4">
+              <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-sm font-semibold">4</div>
+              <span class="text-sm font-medium text-gray-400 hidden sm:block">Details</span>
+            </div>
+            <div class="w-6 sm:w-12 h-0.5 bg-gray-200 step-line" data-line="4"></div>
+            <div class="step-indicator flex items-center gap-1 sm:gap-2" data-step="5">
+              <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-sm font-semibold">5</div>
+              <span class="text-sm font-medium text-gray-400 hidden sm:block">Confirm</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Booking Steps -->
+        <div class="glass-card-strong rounded-2xl p-6 sm:p-8">
+          <!-- Step 1: Service -->
+          <div class="booking-step active" id="step-1">
+            <h2 class="text-xl font-bold text-gray-900 mb-1">Select a Service</h2>
+            <p class="text-gray-500 text-sm mb-6">Choose the type of consultation you need</p>
+            <div id="services-list" class="space-y-3">
+              <div class="flex items-center justify-center py-8"><div class="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div></div>
+            </div>
+          </div>
+
+          <!-- Step 2: Date -->
+          <div class="booking-step" id="step-2">
+            <h2 class="text-xl font-bold text-gray-900 mb-1">Choose a Date</h2>
+            <p class="text-gray-500 text-sm mb-6">Select your preferred appointment date</p>
+            <input type="date" id="date-picker" class="input-field text-lg py-4">
+            <p id="date-error" class="text-red-500 text-sm mt-2 hidden"></p>
+            <div class="flex justify-between mt-8">
+              <button onclick="window.bookingApp.prevStep()" class="btn-secondary">Back</button>
+              <button onclick="window.bookingApp.goToStep(3)" class="btn-primary">Continue</button>
+            </div>
+          </div>
+
+          <!-- Step 3: Time -->
+          <div class="booking-step" id="step-3">
+            <h2 class="text-xl font-bold text-gray-900 mb-1">Select Time</h2>
+            <p class="text-gray-500 text-sm mb-6" id="selected-date-label">Available slots</p>
+            <div id="slots-container">
+              <div class="flex items-center justify-center py-8"><div class="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div></div>
+            </div>
+            <div class="flex justify-between mt-8">
+              <button onclick="window.bookingApp.prevStep()" class="btn-secondary">Back</button>
+              <button onclick="window.bookingApp.goToStep(4)" class="btn-primary">Continue</button>
+            </div>
+          </div>
+
+          <!-- Step 4: Details -->
+          <div class="booking-step" id="step-4">
+            <h2 class="text-xl font-bold text-gray-900 mb-1">Appointment Details</h2>
+            <p class="text-gray-500 text-sm mb-6">Provide your details for the appointment</p>
+            <div class="space-y-4">
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="patient-name" class="block text-sm font-medium text-gray-700 mb-1.5">Full Name *</label>
+                  <input type="text" id="patient-name" class="input-field" placeholder="Your full name" required>
+                </div>
+                <div>
+                  <label for="patient-phone" class="block text-sm font-medium text-gray-700 mb-1.5">Phone Number *</label>
+                  <input type="tel" id="patient-phone" class="input-field" placeholder="+91 98765 43210" required>
+                </div>
+              </div>
+              <div>
+                <label for="consultation-type" class="block text-sm font-medium text-gray-700 mb-1.5">Consultation Type</label>
+                <select id="consultation-type" class="input-field">
+                  <option value="in_person">In-Person Visit</option>
+                  <option value="online">Online Consultation</option>
+                  <option value="follow_up">Follow-up Visit</option>
+                </select>
+              </div>
+              <div>
+                <label for="patient-notes" class="block text-sm font-medium text-gray-700 mb-1.5">Notes (Optional)</label>
+                <textarea id="patient-notes" class="input-field" rows="3" placeholder="Describe your symptoms or reason for visit..."></textarea>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-3">Payment Method</label>
+                <div class="grid grid-cols-2 gap-3">
+                  <label class="flex items-center gap-3 p-4 border-2 border-blue-500 bg-blue-50 rounded-xl cursor-pointer transition-all" id="payment-clinic">
+                    <input type="radio" name="payment" value="clinic" checked class="w-4 h-4 text-blue-600">
+                    <div>
+                      <div class="font-medium text-gray-900 text-sm">Pay at Clinic</div>
+                      <div class="text-xs text-gray-500">Pay during your visit</div>
+                    </div>
+                  </label>
+                  <label class="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-xl cursor-pointer transition-all hover:border-blue-300" id="payment-online">
+                    <input type="radio" name="payment" value="online" class="w-4 h-4 text-blue-600">
+                    <div>
+                      <div class="font-medium text-gray-900 text-sm">Pay Online</div>
+                      <div class="text-xs text-gray-500">Secure payment now</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="flex justify-between mt-8">
+              <button onclick="window.bookingApp.prevStep()" class="btn-secondary">Back</button>
+              <button onclick="window.bookingApp.goToStep(5)" class="btn-primary">Review Booking</button>
+            </div>
+          </div>
+
+          <!-- Step 5: Confirm -->
+          <div class="booking-step" id="step-5">
+            <h2 class="text-xl font-bold text-gray-900 mb-1">Review & Confirm</h2>
+            <p class="text-gray-500 text-sm mb-6">Please review your appointment details</p>
+            <div id="booking-summary" class="space-y-4"></div>
+            <div class="flex justify-between mt-8">
+              <button onclick="window.bookingApp.prevStep()" class="btn-secondary">Back</button>
+              <button onclick="window.bookingApp.submitBooking()" id="submit-booking-btn" class="btn-primary flex items-center gap-2">
+                <span id="submit-text">Confirm Booking</span>
+                <span id="submit-spinner" class="hidden"><svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Success State -->
+          <div class="booking-step" id="step-success">
+            <div class="text-center py-8">
+              <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-10 h-10 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900 mb-2">Appointment Booked Successfully!</h2>
+              <p class="text-gray-500 mb-8">You will receive a WhatsApp confirmation shortly.</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto mb-6">
+                <div class="rounded-2xl gradient-primary p-6 text-white">
+                  <div class="text-xs uppercase tracking-widest text-blue-100 mb-1">Your Token</div>
+                  <div class="text-5xl font-extrabold leading-none" id="success-token">#-</div>
+                </div>
+                <div class="rounded-2xl bg-white border border-gray-100 p-6">
+                  <div class="text-xs uppercase tracking-widest text-gray-400 mb-1">Tokens Attended by Doctor</div>
+                  <div class="text-5xl font-extrabold leading-none text-emerald-600" id="success-attended">0</div>
+                  <div class="flex items-center justify-center gap-1.5 mt-2 text-xs text-gray-400">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Live
+                  </div>
+                </div>
+              </div>
+              <p id="success-queue-hint" class="text-sm text-gray-500 mb-6"></p>
+              <div id="booking-confirmation" class="glass-card rounded-xl p-6 text-left mb-8 max-w-md mx-auto"></div>
+              <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <a id="success-status-link" href="/queue.html" class="btn-secondary">View Queue Status</a>
+                <button onclick="window.location.reload()" class="btn-primary">Book Another Appointment</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </section>
+  </main>
+
+  <footer class="bg-gray-900 text-gray-400 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-sm">&copy; 2026 Dr. Arshadha. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <div id="toast-container" class="fixed top-4 right-4 z-[9999] flex flex-col gap-2"></div>
+
+  <script type="module">
+    import { supabase } from '/js/supabase.js';
+    import { getServices, getAvailableSlots, getMinBookingDate, getMaxBookingDate, isSunday, isPastDate, defaultServices } from '/js/availability.js';
+    import { createAppointment, getQueueStatus } from '/js/appointments.js';
+    import { showToast, formatDate, formatTime } from '/js/ui.js';
+    import { clinicConfig } from '/js/config.js';
+ 
+    let currentStep = 1;
+    let bookingData = { service: null, date: null, time: null, patientName: '', patientPhone: '', consultationType: 'in_person', notes: '', paymentMethod: 'clinic' };
+    let services = [];
+    let availableSlots = [];
+    let successRefId = null;
+    let successTimer = null;
+
+    document.getElementById('mobile-menu-btn')?.addEventListener('click', () => document.getElementById('mobile-menu')?.classList.toggle('open'));
+
+    async function init() {
+      try {
+        const servicesResult = await Promise.race([
+          getServices().catch(e => { console.warn('getServices error, using defaults:', e); return defaultServices; }),
+          new Promise(r => setTimeout(() => r(defaultServices), 5000))
+        ]);
+
+        services = servicesResult || defaultServices;
+        renderServices();
+
+        const datePicker = document.getElementById('date-picker');
+        datePicker.min = getMinBookingDate();
+        datePicker.max = getMaxBookingDate();
+        datePicker.addEventListener('change', handleDateChange);
+
+        document.querySelectorAll('input[name="payment"]').forEach(r => {
+          r.addEventListener('change', (e) => {
+            bookingData.paymentMethod = e.target.value;
+            document.getElementById('payment-clinic').className = e.target.value === 'clinic' ? 'flex items-center gap-3 p-4 border-2 border-blue-500 bg-blue-50 rounded-xl cursor-pointer transition-all' : 'flex items-center gap-3 p-4 border-2 border-gray-200 rounded-xl cursor-pointer transition-all hover:border-blue-300';
+            document.getElementById('payment-online').className = e.target.value === 'online' ? 'flex items-center gap-3 p-4 border-2 border-blue-50 bg-blue-50 rounded-xl cursor-pointer transition-all' : 'flex items-center gap-3 p-4 border-2 border-gray-200 rounded-xl cursor-pointer transition-all hover:border-blue-300';
+          });
+        });
+      } catch (err) {
+        console.error('init error:', err);
+        services = defaultServices;
+        renderServices();
+      }
+    }
+
+    function renderServices() {
+      const container = document.getElementById('services-list');
+      if (!services.length) { container.innerHTML = '<p class="text-gray-500 text-center py-4">No services available.</p>'; return; }
+      container.innerHTML = services.map(s => `
+        <button type="button" data-service-id="${s.id}" class="service-card w-full text-left p-4 border-2 border-gray-200 rounded-xl hover:border-blue-300 transition-all flex items-center gap-4">
+          <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-6 h-6 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="font-semibold text-gray-900">${s.name}</div>
+            <div class="text-sm text-gray-500">${s.duration_minutes || 30} min &middot; ${clinicConfig.payment.symbol}${s.consultation_fee || clinicConfig.payment.consultationFee}</div>
+          </div>
+          <svg class="w-5 h-5 text-gray-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      `).join('');
+
+      container.querySelectorAll('.service-card').forEach(btn => {
+        btn.addEventListener('click', () => {
+          container.querySelectorAll('.service-card').forEach(b => { b.classList.remove('border-blue-500', 'bg-blue-50'); b.classList.add('border-gray-200'); });
+          btn.classList.remove('border-gray-200');
+          btn.classList.add('border-blue-500', 'bg-blue-50');
+          bookingData.service = services.find(s => s.id === btn.dataset.serviceId);
+          setTimeout(() => goToStep(2), 300);
+        });
+      });
+    }
+
+    async function handleDateChange(e) {
+      const date = e.target.value;
+      const errorEl = document.getElementById('date-error');
+      errorEl.classList.add('hidden');
+
+      if (isSunday(date)) { errorEl.textContent = 'The clinic is closed on Sundays. Please select another date.'; errorEl.classList.remove('hidden'); return; }
+      if (isPastDate(date)) { errorEl.textContent = 'Cannot book appointments in the past.'; errorEl.classList.remove('hidden'); return; }
+
+      bookingData.date = date;
+      document.getElementById('selected-date-label').textContent = `Available slots for ${formatDate(date)}`;
+
+      const container = document.getElementById('slots-container');
+      container.innerHTML = '<div class="flex items-center justify-center py-8"><div class="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div></div>';
+
+      try {
+        availableSlots = await getAvailableSlots(date, bookingData.service?.id);
+        renderSlots();
+      } catch (err) {
+        container.innerHTML = '<p class="text-red-500 text-center py-4">Failed to load available slots. Please try again.</p>';
+      }
+    }
+
+    function renderSlots() {
+      const container = document.getElementById('slots-container');
+      if (!availableSlots.length) {
+        container.innerHTML = '<div class="text-center py-8"><svg class="w-12 h-12 text-gray-300 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p class="text-gray-500 font-medium">No available slots for this date</p><p class="text-gray-400 text-sm mt-1">Please select a different date</p></div>';
+        return;
+      }
+
+      container.innerHTML = `<div class="grid grid-cols-3 sm:grid-cols-4 gap-2">${availableSlots.map(slot => {
+        const count = slot.bookedCount || 0;
+        const badge = count > 0 ? `<span class="ml-1 text-[10px] px-1.5 py-0.5 rounded-full ${count >= 3 ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}">${count} booked</span>` : '';
+        return `
+        <button type="button" data-time="${slot.value}" class="slot-btn p-3 border-2 border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:border-blue-300 hover:bg-blue-50 transition-all text-center">
+          ${slot.label}${badge}
+        </button>`;
+      }).join('')}</div>`;
+
+      container.querySelectorAll('.slot-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          container.querySelectorAll('.slot-btn').forEach(b => { b.classList.remove('border-blue-500', 'bg-blue-50', 'text-blue-700'); b.classList.add('border-gray-200', 'text-gray-700'); });
+          btn.classList.remove('border-gray-200', 'text-gray-700');
+          btn.classList.add('border-blue-500', 'bg-blue-50', 'text-blue-700');
+          bookingData.time = btn.dataset.time;
+        });
+      });
+    }
+
+    function goToStep(step) {
+      if (step === 3 && !bookingData.date) { showToast('Please select a date first.', 'warning'); return; }
+      if (step === 4 && !bookingData.time) { showToast('Please select a time slot.', 'warning'); return; }
+      if (step === 5) {
+        const name = document.getElementById('patient-name').value.trim();
+        const phone = document.getElementById('patient-phone').value.trim();
+        if (!name) { showToast('Please enter your name.', 'warning'); return; }
+        if (!phone) { showToast('Please enter your phone number.', 'warning'); return; }
+        bookingData.patientName = name;
+        bookingData.patientPhone = phone;
+        bookingData.consultationType = document.getElementById('consultation-type').value;
+        bookingData.notes = document.getElementById('patient-notes').value;
+        renderSummary();
+      }
+      setStep(step);
+    }
+
+    function setStep(step) {
+      currentStep = step;
+      document.querySelectorAll('.booking-step').forEach(s => s.classList.remove('active'));
+      document.getElementById(`step-${step}`)?.classList.add('active');
+
+      document.querySelectorAll('.step-indicator').forEach(ind => {
+        const s = parseInt(ind.dataset.step);
+        const circle = ind.querySelector('div');
+        const label = ind.querySelector('span');
+        if (s <= step) {
+          circle.className = 'w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold';
+          if (label) { label.className = 'text-sm font-medium text-blue-600 hidden sm:block'; }
+          if (s < step) { circle.innerHTML = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>'; } else { circle.textContent = s; }
+        } else {
+          circle.className = 'w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-sm font-semibold';
+          circle.textContent = s;
+          if (label) { label.className = 'text-sm font-medium text-gray-400 hidden sm:block'; }
+        }
+      });
+
+      document.querySelectorAll('.step-line').forEach(line => {
+        const l = parseInt(line.dataset.line);
+        line.className = `w-6 sm:w-12 h-0.5 step-line ${l < step ? 'bg-blue-600' : 'bg-gray-200'}`;
+      });
+    }
+
+    function prevStep() { if (currentStep > 1) setStep(currentStep - 1); }
+
+    function renderSummary() {
+      const s = bookingData;
+      const paymentLabel = s.paymentMethod === 'online' ? 'Pay Online' : 'Pay at Clinic';
+      const typeLabels = { in_person: 'In-Person Visit', online: 'Online Consultation', follow_up: 'Follow-up Visit' };
+      document.getElementById('booking-summary').innerHTML = `
+        <div class="bg-gray-50 rounded-xl p-5 space-y-3">
+          <div class="flex justify-between"><span class="text-gray-500 text-sm">Patient</span><span class="font-medium text-gray-900 text-sm">${s.patientName || '-'}</span></div>
+          <hr class="border-gray-200">
+          <div class="flex justify-between"><span class="text-gray-500 text-sm">Phone</span><span class="font-medium text-gray-900 text-sm">${s.patientPhone || '-'}</span></div>
+          <hr class="border-gray-200">
+          <div class="flex justify-between"><span class="text-gray-500 text-sm">Service</span><span class="font-medium text-gray-900 text-sm">${s.service?.name || '-'}</span></div>
+          <hr class="border-gray-200">
+          <div class="flex justify-between"><span class="text-gray-500 text-sm">Date</span><span class="font-medium text-gray-900 text-sm">${s.date ? formatDate(s.date) : '-'}</span></div>
+          <hr class="border-gray-200">
+          <div class="flex justify-between"><span class="text-gray-500 text-sm">Time</span><span class="font-medium text-gray-900 text-sm">${s.time ? formatTime(s.time) : '-'}</span></div>
+          <hr class="border-gray-200">
+          <div class="flex justify-between"><span class="text-gray-500 text-sm">Doctor</span><span class="font-medium text-gray-900 text-sm">${clinicConfig.doctorName}</span></div>
+          <hr class="border-gray-200">
+          <div class="flex justify-between"><span class="text-gray-500 text-sm">Consultation Type</span><span class="font-medium text-gray-900 text-sm">${typeLabels[s.consultationType] || 'In-Person Visit'}</span></div>
+          <hr class="border-gray-200">
+          <div class="flex justify-between"><span class="text-gray-500 text-sm">Payment</span><span class="font-medium text-gray-900 text-sm">${paymentLabel}</span></div>
+          ${s.notes ? `<hr class="border-gray-200"><div><span class="text-gray-500 text-sm block mb-1">Notes</span><p class="text-sm text-gray-700">${s.notes}</p></div>` : ''}
+        </div>
+      `;
+    }
+
+    async function submitBooking() {
+      const btn = document.getElementById('submit-booking-btn');
+      const text = document.getElementById('submit-text');
+      const spinner = document.getElementById('submit-spinner');
+
+      btn.disabled = true;
+      text.classList.add('hidden');
+      spinner.classList.remove('hidden');
+
+      const result = await createAppointment({
+        serviceId: bookingData.service?.id,
+        appointmentDate: bookingData.date,
+        appointmentTime: bookingData.time,
+        patientName: bookingData.patientName,
+        patientPhone: bookingData.patientPhone,
+        consultationType: bookingData.consultationType,
+        patientNotes: bookingData.notes,
+        paymentMethod: bookingData.paymentMethod
+      });
+
+      btn.disabled = false;
+      text.classList.remove('hidden');
+      spinner.classList.add('hidden');
+
+      if (result.error) { showToast(result.error, 'error'); return; }
+
+      const appt = result.appointment || {};
+      const refId = appt.id || 'APT' + Date.now().toString(36).toUpperCase();
+      const apptDate = appt.appointment_date || bookingData.date;
+      const apptTime = (appt.appointment_time || bookingData.time || '09:00').substring(0, 5);
+      const tokenNum = result.tokenNumber || appt.token_number || null;
+      successRefId = appt.id || null;
+
+      document.getElementById('success-token').textContent = tokenNum ? `#${tokenNum}` : '#-';
+      if (successRefId) {
+        localStorage.setItem('last_booking_ref', successRefId);
+        document.getElementById('success-status-link').href = `/queue.html?ref=${encodeURIComponent(successRefId)}`;
+        pollSuccessQueue();
+      }
+
+      document.getElementById('booking-confirmation').innerHTML = `
+        <div class="space-y-3">
+          <div class="flex justify-between"><span class="text-gray-500 text-sm">Reference</span><span class="font-mono font-medium text-gray-900 text-sm">${refId.substring(0, 8).toUpperCase()}</span></div>
+          ${tokenNum ? `<div class="flex justify-between"><span class="text-gray-500 text-sm">Token Number</span><span class="font-mono font-semibold text-blue-700 text-sm">#${tokenNum}</span></div>` : ''}
+          <div class="flex justify-between"><span class="text-gray-500 text-sm">Service</span><span class="font-medium text-gray-900 text-sm">${bookingData.service?.name || 'Consultation'}</span></div>
+          <div class="flex justify-between"><span class="text-gray-500 text-sm">Date</span><span class="font-medium text-gray-900 text-sm">${formatDate(apptDate)}</span></div>
+          <div class="flex justify-between"><span class="text-gray-500 text-sm">Time</span><span class="font-medium text-gray-900 text-sm">${formatTime(apptTime)}</span></div>
+        </div>
+      `;
+
+      document.querySelectorAll('.booking-step').forEach(s => s.classList.remove('active'));
+      document.getElementById('step-success').classList.add('active');
+
+      showToast('Appointment booked successfully!', 'success');
+    }
+
+    async function pollSuccessQueue() {
+      if (!successRefId) return;
+      clearTimeout(successTimer);
+      const q = await getQueueStatus(successRefId);
+      if (!q.error) {
+        document.getElementById('success-attended').textContent = q.attended_count ?? 0;
+        const ahead = q.ahead_count ?? 0;
+        const serving = q.current_serving_token != null ? ` &middot; Now Serving <span class="font-mono font-bold text-blue-700">#${q.current_serving_token}</span>` : '';
+        document.getElementById('success-queue-hint').innerHTML =
+          ahead === 0
+            ? `<span class="text-emerald-700 font-medium">You are next! Please be ready.</span>${serving}`
+            : `<span class="font-semibold">${ahead}</span> patient${ahead === 1 ? '' : 's'} ahead of you${serving}`;
+        successTimer = setTimeout(pollSuccessQueue, 15000);
+      }
+    }
+
+    window.bookingApp = { goToStep, prevStep, submitBooking };
+
+    init();
+  </script>
+</body>
+</html>
