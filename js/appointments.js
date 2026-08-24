@@ -214,6 +214,19 @@ export async function getQueueStatus(appointmentId) {
   }
 }
 
+export async function getQueueByPhone(phone) {
+  try {
+    const { data, error } = await supabase.rpc("get_patient_queue_by_phone", {
+      p_phone: phone,
+    });
+    if (error) return { error: error.message };
+    if (data?.error) return { error: data.error };
+    return data;
+  } catch (e) {
+    return { error: e.message || "Failed to load queue status." };
+  }
+}
+
 export async function getAppointments(userId, status = null, upcoming = null) {
   try {
     let query = supabase
