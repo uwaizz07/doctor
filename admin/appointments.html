@@ -349,7 +349,7 @@
           .map(
             (a) => `
         <tr class="hover:bg-gray-50">
-          <td class="px-4 py-3"><div class="font-medium text-gray-900">${a.patient?.full_name || "Unknown"}</div><div class="text-xs text-gray-500">${a.patient_phone || ""}</div></td>
+          <td class="px-4 py-3"><div class="font-medium text-gray-900">${a.patient?.full_name || a.patient_name || "Unknown"}</div><div class="text-xs text-gray-500">${a.patient?.phone || a.patient_phone || ""}</div></td>
           <td class="px-4 py-3 text-gray-700">${a.service?.name || "Consultation"}</td>
           <td class="px-4 py-3"><div class="text-gray-900">${formatDate(a.appointment_date)}</div><div class="text-xs text-gray-500">${formatTime(a.appointment_time?.substring(0, 5))}${a.token_number ? ` · Token #${a.token_number}` : ""}</div></td>
           <td class="px-4 py-3">${renderStatusBadge(a.status)}</td>
@@ -368,7 +368,7 @@
             (a) => `
         <div class="card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="font-medium text-gray-900">${a.patient?.full_name || "Unknown"}</span>
+            <span class="font-medium text-gray-900">${a.patient?.full_name || a.patient_name || "Unknown"}</span>
             ${renderStatusBadge(a.status)}
           </div>
           <div class="text-sm text-gray-500 mb-2">${a.service?.name || "Consultation"} &middot; ${formatDate(a.appointment_date)} at ${formatTime(a.appointment_time?.substring(0, 5))}${a.token_number ? ` · Token #${a.token_number}` : ""}</div>
@@ -415,13 +415,13 @@
           <button onclick="document.getElementById('action-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600" aria-label="Close"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
         <div class="bg-gray-50 rounded-xl p-4 space-y-2 mb-6">
-          <div class="flex justify-between text-sm"><span class="text-gray-500">Patient</span><span class="font-medium">${a.patient?.full_name || "Unknown"}</span></div>
+          <div class="flex justify-between text-sm"><span class="text-gray-500">Patient</span><span class="font-medium">${a.patient?.full_name || a.patient_name || "Unknown"}</span></div>
           <div class="flex justify-between text-sm"><span class="text-gray-500">Service</span><span class="font-medium">${a.service?.name || "Consultation"}</span></div>
           <div class="flex justify-between text-sm"><span class="text-gray-500">Date</span><span class="font-medium">${formatDate(a.appointment_date)}</span></div>
           <div class="flex justify-between text-sm"><span class="text-gray-500">Time</span><span class="font-medium">${formatTime(a.appointment_time?.substring(0, 5))}</span></div>
           ${a.token_number ? `<div class="flex justify-between text-sm"><span class="text-gray-500">Token</span><span class="font-mono font-semibold text-blue-700">#${a.token_number}</span></div>` : ""}
           <div class="flex justify-between text-sm"><span class="text-gray-500">Status</span>${renderStatusBadge(a.status)}</div>
-          <div class="flex justify-between text-sm"><span class="text-gray-500">Phone</span><span class="font-medium">${a.patient_phone || "-"}</span></div>
+          <div class="flex justify-between text-sm"><span class="text-gray-500">Phone</span><span class="font-medium">${a.patient?.phone || a.patient_phone || "-"}</span></div>
           ${a.patient_notes ? `<div class="text-sm"><span class="text-gray-500">Notes:</span><p class="text-gray-700 mt-1">${a.patient_notes}</p></div>` : ""}
         </div>
         <div class="space-y-3">

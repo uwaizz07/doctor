@@ -96,6 +96,8 @@ export async function createAppointment({
       p_patient_notes: patientNotes || "",
       p_payment_status: paymentStatus,
       p_consultation_fee: consultationFee,
+      p_patient_name: patientId ? null : patientName || "Patient",
+      p_patient_phone: patientId ? null : patientPhone || "",
     });
 
       if (error || data?.error) {
@@ -132,6 +134,8 @@ export async function createAppointment({
               duration * 60000,
           ).toISOString(),
           token_number: tokenNumber,
+          patient_name: patientId ? null : patientName || "Patient",
+          patient_phone: patientId ? null : patientPhone || "",
         })
         .select()
         .single();
@@ -339,8 +343,8 @@ export async function updateAppointmentStatus(
         body: {
           type: smsType[newStatus],
           appointmentId: appointment.id,
-          patientPhone: appointment.patient?.phone || "",
-          patientName: appointment.patient?.full_name || "Patient",
+          patientPhone: appointment.patient?.phone || appointment.patient_phone || "",
+          patientName: appointment.patient?.full_name || appointment.patient_name || "Patient",
           date: appointment.appointment_date,
           time: appointment.appointment_time?.substring(0, 5),
           service: service?.name || "Consultation",
