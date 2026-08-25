@@ -493,3 +493,141 @@ function getSessionForTime(timeStr) {
   if (hour >= 17 && hour < 21) return "evening";
   return "morning";
 }
+
+export async function addWalkinPatient(patientName, patientPhone) {
+  if (!patientName || !patientName.trim()) {
+    return { error: "Patient name is required." };
+  }
+
+  const now = new Date();
+  const today = now.toISOString().split("T")[0];
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  const currentTime = `${String(currentHour).padStart(2, "0")}:${String(currentMinute).padStart(2, "0")}:00`;
+
+  const session = getSessionForTime(currentTime);
+  const sessionStart = session === "morning" ? "10:00:00" : "17:00:00";
+  const sessionEnd = session === "morning" ? "14:00:00" : "21:00:00";
+
+  const { data: existingAppts } = await supabase
+    .from("appointments")
+    .select("appointment_time, patient_name")
+    .eq("appointment_date", today)
+    .gte("appointment_time", sessionStart)
+    .lt("appointment_time", sessionEnd)
+    .not("status", "in", '("cancelled","no_show")')
+    .order("appointment_time", { ascending: true });
+
+  const currentTotalMinutes = currentHour * 60 + currentMinute;
+  let assignedMinutes = currentTotalMinutes;
+
+  const existingTimes = new Set();
+  const walkinTimes = new Set();
+  (existingAppts || []).forEach(a => {
+    const t = a.appointment_time?.substring(0, 5);
+    if (t) existingTimes.add(t);
+  });
+
+  const isExactSlotTaken = existingTimes.has(
+    `${String(Math.floor(assignedMinutes / 60)).padStart(2, "0")}:${String(assignedMinutes % 60).padStart(2, "0")}`
+  );
+
+  if (isExactSlotTaken) {
+    assignedMinutes = Math.ceil(assignedMinutes / 30) * 30;
+  }
+
+  const sessionStartMinutes = session === "morning" ? 600 : 1020;
+  const sessionEndMinutes = session === "morning" ? 840 : 1260;
+
+  while (assignedMinutes < sessionEndMinutes) {
+    const slotH = Math.floor(assignedMinutes / 60);
+    const slotM = assignedMinutes % 60;
+    const slotStr = `${String(slotH).padStart(2, "0")}:${String(slotM).padStart(2, "0")}`;
+    if (!existingTimes.has(slotStr) && !walkinTimes.has(slotStr)) {
+      break;
+    }
+    assignedMinutes += 30;
+  }
+
+  if (assignedMinutes >= sessionEndMinutes) {
+    return { error: "No available slots left in this session for walk-in patients." };
+  }
+
+  const assignedH = Math.floor(assignedMinutes / 60);
+  const assignedM = assignedMinutes % 60;
+  const assignedTime = `${String(assignedH).padStart(2, "0")}:${String(assignedM).padStart(2, "0")}:00`;
+  walkinTimes.add(`${String(assignedH).padStart(2, "0")}:${String(assignedM).padStart(2, "0")}`);
+
+  const duration = clinicConfig.schedule.slotDuration;
+
+  let apptId = null;
+  let tokenNumber = null;
+
+  try {
+    const { data, error } = await supabase.rpc("book_appointment", {
+      p_patient_id: null,
+      p_service_id: null,
+      p_appointment_date: today,
+      p_appointment_time: assignedTime,
+      p_duration_minutes: duration,
+      p_consultation_type: "in_person",
+      p_patient_notes: "Walk-in patient",
+      p_payment_status: "not_required",
+      p_consultation_fee: clinicConfig.payment.consultationFee,
+      p_patient_name: patientName.trim(),
+      p_patient_phone: patientPhone || "",
+    });
+
+    if (error || data?.error) {
+      const { data: existingTokens } = await supabase
+        .from("appointments")
+        .select("token_number")
+        .eq("appointment_date", today)
+        .gte("appointment_time", sessionStart)
+        .lt("appointment_time", sessionEnd)
+        .not("status", "in", '("cancelled","no_show")')
+        .order("token_number", { ascending: false })
+        .limit(1);
+      tokenNumber = (existingTokens?.[0]?.token_number || 0) + 1;
+
+      const { data: directData, error: insertError } = await supabase
+        .from("appointments")
+        .insert({
+          patient_id: null,
+          service_id: null,
+          appointment_date: today,
+          appointment_time: assignedTime,
+          duration_minutes: duration,
+          consultation_type: "in_person",
+          patient_notes: "Walk-in patient",
+          status: "pending",
+          payment_status: "not_required",
+          consultation_fee: clinicConfig.payment.consultationFee,
+          start_at: new Date(`${today}T${assignedTime}`).toISOString(),
+          end_at: new Date(new Date(`${today}T${assignedTime}`).getTime() + duration * 60000).toISOString(),
+          token_number: tokenNumber,
+          patient_name: patientName.trim(),
+          patient_phone: patientPhone || "",
+        })
+        .select()
+        .single();
+
+      if (insertError) {
+        return { error: insertError.message || "Failed to add walk-in patient." };
+      }
+      apptId = directData?.id;
+    } else {
+      apptId = data?.appointment_id;
+      tokenNumber = data?.token_number;
+    }
+  } catch (e) {
+    return { error: e.message || "Failed to add walk-in patient." };
+  }
+
+  return {
+    success: true,
+    appointmentId: apptId,
+    tokenNumber: tokenNumber,
+    assignedTime: `${String(assignedH).padStart(2, "0")}:${String(assignedM).padStart(2, "0")}`,
+  };
+}

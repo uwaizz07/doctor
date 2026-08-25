@@ -181,16 +181,17 @@
     <main class="flex-1 pt-16">
       <!-- Hero Section -->
       <section
-        class="relative overflow-hidden min-h-[90vh] flex items-center gradient-mesh"
+        class="relative overflow-hidden min-h-[90vh] flex items-center"
       >
         <div
-          class="absolute inset-0 bg-gradient-to-br from-blue-50/80 via-white to-blue-50/50"
+          class="absolute inset-0"
         ></div>
         <div
-          class="absolute top-20 right-0 w-[500px] h-[500px] bg-blue-100/30 rounded-full blur-3xl"
+          class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-15"
+          style="background-image: url('/DOC.png'); background-position: center 20%;"
         ></div>
         <div
-          class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-50/50 rounded-full blur-3xl"
+          class="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-white/60"
         ></div>
 
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -219,7 +220,7 @@
               <div class="flex flex-wrap gap-4">
                 <a
                   href="/book.html"
-                  class="btn-primary text-base px-8 py-4 inline-flex items-center gap-2"
+                  class="bg-blue-600 text-white text-base px-8 py-4 rounded-xl font-semibold inline-flex items-center gap-2 hover:bg-blue-700 transition-all duration-200 shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 active:scale-[0.98]"
                 >
                   <svg
                     class="w-5 h-5"
@@ -237,7 +238,7 @@
                 </a>
                 <a
                   href="/about.html"
-                  class="btn-secondary text-base px-8 py-4 inline-flex items-center gap-2"
+                  class="bg-white text-gray-700 text-base px-8 py-4 rounded-xl font-semibold border-2 border-gray-200 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 inline-flex items-center gap-2 transition-all duration-200 hover:shadow-md"
                 >
                   Learn More
                   <svg
@@ -278,17 +279,9 @@
             <div class="hidden lg:flex justify-center animate-fade-in">
               <div class="relative">
                 <div
-                  class="w-80 h-80 rounded-3xl gradient-primary flex items-center justify-center shadow-2xl shadow-blue-600/20"
+                  class="w-80 h-80 rounded-3xl overflow-hidden shadow-2xl shadow-blue-600/20 border-4 border-white"
                 >
-                  <svg
-                    class="w-40 h-40 text-white/90"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1"
-                  >
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                  </svg>
+                  <img src="/DOC.png" alt="Dr. Arshadha" class="w-full h-full object-cover object-top" />
                 </div>
                 <div
                   class="absolute -bottom-4 -left-4 glass-card rounded-2xl p-4 animate-slide-up"
@@ -311,7 +304,7 @@
                       <div class="text-sm font-semibold text-gray-900">
                         Next Available
                       </div>
-                      <div class="text-xs text-gray-500">Tomorrow, 9:00 AM</div>
+                      <div class="text-xs text-gray-500">Today, 10:00 AM</div>
                     </div>
                   </div>
                 </div>
