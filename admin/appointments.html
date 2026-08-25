@@ -316,7 +316,7 @@
             .select(
               "*, service:services(name), patient:profiles!appointments_patient_id_fkey(full_name, phone)",
             )
-            .order("appointment_date", { ascending: false })
+            .order("appointment_date", { ascending: true })
             .order("appointment_time");
           if (error) throw error;
           allAppts = data || [];
