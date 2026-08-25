@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Patients | Admin</title>
+  <title>Today's Patients | Admin</title>
   <meta name="robots" content="noindex, nofollow">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,14 +29,14 @@
     </nav>
   </aside>
   <div class="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-100 z-30 lg:hidden flex items-center justify-between px-4">
-    <span class="font-bold text-gray-900">Patients</span>
+    <span class="font-bold text-gray-900">Today's Patients</span>
     <button id="sidebar-toggle" class="p-2 rounded-lg hover:bg-gray-100" aria-label="Menu"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
   </div>
 
   <div class="flex-1 lg:ml-64">
     <div class="p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 max-w-7xl mx-auto">
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Patients</h1>
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Today's Patients</h1>
         <input type="text" id="search-input" class="input-field text-sm py-2 w-full sm:w-64" placeholder="Search patients...">
       </div>
       <div id="patients-list" class="space-y-3"></div>
@@ -65,10 +65,16 @@
       const profile = await getProfile(user.id);
       if (!profile || (profile.role !== 'doctor' && profile.role !== 'admin')) { window.location.href = '/'; return; }
 
-      const [{ data: profiles }, { data: appts }] = await Promise.all([
-        supabase.from('profiles').select('*').eq('role', 'patient').order('created_at', { ascending: false }),
-        supabase.from('appointments').select('id, patient_id, patient_name, patient_phone, patient_notes, appointment_date, status, created_at').order('appointment_date', { ascending: false }),
-      ]);
+      const today = new Date().toISOString().split('T')[0];
+
+      const { data: appts } = await supabase.from('appointments').select('id, patient_id, patient_name, patient_phone, patient_notes, appointment_date, status, created_at, appointment_time').eq('appointment_date', today).order('appointment_time', { ascending: true });
+
+      const patientIds = [...new Set((appts || []).map(a => a.patient_id).filter(Boolean))];
+      let profiles = [];
+      if (patientIds.length) {
+        const { data } = await supabase.from('profiles').select('*').in('id', patientIds);
+        profiles = data || [];
+      }
 
       const map = new Map();
 
@@ -125,7 +131,7 @@
 
     function renderPatients(list) {
       const container = document.getElementById('patients-list');
-      if (!list.length) { container.innerHTML = '<div class="card p-8 text-center text-gray-500">No patients found.</div>'; return; }
+      if (!list.length) { container.innerHTML = '<div class="card p-8 text-center text-gray-500">No patients with appointments today.</div>'; return; }
       container.innerHTML = list.map(p => {
         const name = p.name || 'Unknown';
         const badge = p.registered
