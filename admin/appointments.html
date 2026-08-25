@@ -410,7 +410,6 @@
 
         document.querySelectorAll("[data-delete]").forEach((btn) => {
           btn.addEventListener("click", async () => {
-            if (!confirm("Delete this appointment permanently?")) return;
             btn.disabled = true;
             const { error } = await supabase.from("appointments").delete().eq("id", btn.dataset.delete);
             if (error) {
@@ -488,7 +487,6 @@
       }
 
       async function clearAll() {
-        if (!confirm("Delete ALL appointments permanently? This cannot be undone.")) return;
         const btn = document.getElementById("clear-all-btn");
         btn.disabled = true;
         btn.textContent = "Deleting...";
