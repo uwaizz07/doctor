@@ -63,19 +63,25 @@ export async function getAvailableSlots(date, serviceId) {
   const dayOfWeek = new Date(date + 'T00:00:00').getDay();
   if (!clinicConfig.schedule.workingDays.includes(dayOfWeek)) return [];
 
+  const duration = clinicConfig.schedule.slotDuration;
+
   const { data: specialSchedule } = await supabase
     .from('doctor_schedules')
     .select('start_time, end_time')
     .eq('schedule_date', date)
     .maybeSingle();
 
-  const startTime = specialSchedule?.start_time || clinicConfig.schedule.startTime;
-  const endTime = specialSchedule?.end_time || clinicConfig.schedule.endTime;
-  const duration = clinicConfig.schedule.slotDuration;
+  let sessions = clinicConfig.schedule.sessions;
+  if (specialSchedule) {
+    sessions = [{ label: "Default", startTime: specialSchedule.start_time, endTime: specialSchedule.end_time }];
+  }
 
-  const allSlots = generateTimeSlots(startTime, endTime, duration);
+  const allSlots = [];
+  for (const session of sessions) {
+    const sessionSlots = generateTimeSlots(session.startTime, session.endTime, duration);
+    sessionSlots.forEach(s => allSlots.push({ ...s, session: session.label }));
+  }
 
-  // Count bookings per time slot
   const bookedCounts = {};
   (existingAppointments || []).forEach(a => {
     const t = a.appointment_time?.substring(0, 5);
@@ -88,15 +94,11 @@ export async function getAvailableSlots(date, serviceId) {
     if (bStart) blockedTimes.add(bStart);
   });
 
-  const breakStart = clinicConfig.schedule.breakStart;
-  const breakEnd = clinicConfig.schedule.breakEnd;
-
   const now = new Date();
   const isToday = date === now.toISOString().split('T')[0];
 
   return allSlots.filter(slot => {
     if (blockedTimes.has(slot.value)) return false;
-    if (slot.value >= breakStart && slot.value < breakEnd) return false;
     if (isToday) {
       const [h, m] = slot.value.split(':').map(Number);
       const slotDate = new Date();

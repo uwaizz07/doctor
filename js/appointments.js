@@ -103,11 +103,16 @@ export async function createAppointment({
       if (error || data?.error) {
       if (data?.error) return { error: data.error };
       // Try direct insert fallback
-      // Compute daily token_number for fallback path
+      // Compute session-aware token_number for fallback path
+      const session = getSessionForTime(formattedTime);
+      const sessionStart = session === "morning" ? "10:00" : "17:00";
+      const sessionEnd = session === "morning" ? "14:00" : "21:00";
       const { data: existingTokens } = await supabase
         .from("appointments")
         .select("token_number")
         .eq("appointment_date", appointmentDate)
+        .gte("appointment_time", sessionStart)
+        .lt("appointment_time", sessionEnd)
         .not("status", "in", '("cancelled","no_show")')
         .order("token_number", { ascending: false })
         .limit(1);
@@ -480,4 +485,11 @@ function isSunday(dateStr) {
 function isPastDate(dateStr) {
   const today = new Date().toISOString().split("T")[0];
   return dateStr < today;
+}
+
+function getSessionForTime(timeStr) {
+  const hour = parseInt(timeStr.split(":")[0], 10);
+  if (hour >= 10 && hour < 14) return "morning";
+  if (hour >= 17 && hour < 21) return "evening";
+  return "morning";
 }

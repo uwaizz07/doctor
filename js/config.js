@@ -5,11 +5,11 @@ export const clinicConfig = {
 
   schedule: {
     workingDays: [1, 2, 3, 4, 5, 6],
-    startTime: "09:00",
-    endTime: "17:00",
     slotDuration: 30,
-    breakStart: "13:00",
-    breakEnd: "13:30"
+    sessions: [
+      { label: "Morning", startTime: "10:00", endTime: "13:30" },
+      { label: "Evening", startTime: "17:00", endTime: "20:30" }
+    ]
   },
 
   contact: {
@@ -21,12 +21,12 @@ export const clinicConfig = {
   },
 
   clinicHours: [
-    { day: "Monday", hours: "9:00 AM – 5:00 PM" },
-    { day: "Tuesday", hours: "9:00 AM – 5:00 PM" },
-    { day: "Wednesday", hours: "9:00 AM – 5:00 PM" },
-    { day: "Thursday", hours: "9:00 AM – 5:00 PM" },
-    { day: "Friday", hours: "9:00 AM – 5:00 PM" },
-    { day: "Saturday", hours: "9:00 AM – 5:00 PM" },
+    { day: "Monday", hours: "10:00 AM – 1:30 PM, 5:00 PM – 8:30 PM" },
+    { day: "Tuesday", hours: "10:00 AM – 1:30 PM, 5:00 PM – 8:30 PM" },
+    { day: "Wednesday", hours: "10:00 AM – 1:30 PM, 5:00 PM – 8:30 PM" },
+    { day: "Thursday", hours: "10:00 AM – 1:30 PM, 5:00 PM – 8:30 PM" },
+    { day: "Friday", hours: "10:00 AM – 1:30 PM, 5:00 PM – 8:30 PM" },
+    { day: "Saturday", hours: "10:00 AM – 1:30 PM, 5:00 PM – 8:30 PM" },
     { day: "Sunday", hours: "Closed" }
   ],
 

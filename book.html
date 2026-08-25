@@ -210,6 +210,7 @@
                 </div>
               </div>
               <p id="success-queue-hint" class="text-sm text-gray-500 mb-6"></p>
+              <p class="text-sm text-amber-600 font-medium mb-6">Please arrive 15 minutes before your token time.</p>
               <div id="booking-confirmation" class="glass-card rounded-xl p-6 text-left mb-8 max-w-md mx-auto"></div>
               <div class="flex flex-col sm:flex-row gap-3 justify-center">
                 <a id="success-status-link" href="/queue.html" class="btn-secondary">View Queue Status</a>
@@ -330,14 +331,26 @@
         return;
       }
 
-      container.innerHTML = `<div class="grid grid-cols-3 sm:grid-cols-4 gap-2">${availableSlots.map(slot => {
-        const count = slot.bookedCount || 0;
-        const badge = count > 0 ? `<span class="ml-1 text-[10px] px-1.5 py-0.5 rounded-full ${count >= 3 ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}">${count} booked</span>` : '';
-        return `
-        <button type="button" data-time="${slot.value}" class="slot-btn p-3 border-2 border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:border-blue-300 hover:bg-blue-50 transition-all text-center">
-          ${slot.label}${badge}
-        </button>`;
-      }).join('')}</div>`;
+      container.innerHTML = (() => {
+        const groups = {};
+        availableSlots.forEach(slot => {
+          const key = slot.session || 'Slots';
+          if (!groups[key]) groups[key] = [];
+          groups[key].push(slot);
+        });
+        let html = '';
+        for (const [session, slots] of Object.entries(groups)) {
+          html += `<div class="mb-3"><p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">${session}</p><div class="grid grid-cols-3 sm:grid-cols-4 gap-2">${slots.map(slot => {
+            const count = slot.bookedCount || 0;
+            const badge = count > 0 ? `<span class="ml-1 text-[10px] px-1.5 py-0.5 rounded-full ${count >= 3 ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}">${count} booked</span>` : '';
+            return `
+            <button type="button" data-time="${slot.value}" class="slot-btn p-3 border-2 border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:border-blue-300 hover:bg-blue-50 transition-all text-center">
+              ${slot.label}${badge}
+            </button>`;
+          }).join('')}</div></div>`;
+        }
+        return html;
+      })();
 
       container.querySelectorAll('.slot-btn').forEach(btn => {
         btn.addEventListener('click', () => {
