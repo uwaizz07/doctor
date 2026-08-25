@@ -505,76 +505,57 @@ export async function addWalkinPatient(patientName, patientPhone) {
   const currentMinute = now.getMinutes();
   const currentTotalMinutes = currentHour * 60 + currentMinute;
 
-  let session, sessionStart, sessionEnd, sessionStartMinutes, sessionEndMinutes;
+  let sessionStartMinutes, sessionEndMinutes;
 
   if (currentHour >= 10 && currentHour < 14) {
-    session = "morning";
-    sessionStart = "10:00:00";
-    sessionEnd = "14:00:00";
     sessionStartMinutes = 600;
     sessionEndMinutes = 840;
   } else if (currentHour >= 17 && currentHour < 21) {
-    session = "evening";
-    sessionStart = "17:00:00";
-    sessionEnd = "21:00:00";
     sessionStartMinutes = 1020;
     sessionEndMinutes = 1260;
   } else if (currentHour < 10) {
-    session = "morning";
-    sessionStart = "10:00:00";
-    sessionEnd = "14:00:00";
     sessionStartMinutes = 600;
     sessionEndMinutes = 840;
   } else if (currentHour >= 14 && currentHour < 17) {
-    session = "evening";
-    sessionStart = "17:00:00";
-    sessionEnd = "21:00:00";
     sessionStartMinutes = 1020;
     sessionEndMinutes = 1260;
   } else {
     return { error: "Clinic is closed. Morning: 10 AM - 1:30 PM, Evening: 5 PM - 8:30 PM." };
   }
 
-  const { data: existingAppts } = await supabase
-    .from("appointments")
-    .select("appointment_time")
-    .eq("appointment_date", today)
-    .gte("appointment_time", sessionStart)
-    .lt("appointment_time", sessionEnd)
-    .not("status", "in", '("cancelled","no_show")')
-    .order("appointment_time", { ascending: true });
+  const sessionStart = `${String(Math.floor(sessionStartMinutes / 60)).padStart(2, "0")}:00:00`;
+  const sessionEnd = `${String(Math.floor(sessionEndMinutes / 60)).padStart(2, "0")}:00:00`;
 
-  const existingTimes = new Set();
-  (existingAppts || []).forEach(a => {
-    const t = a.appointment_time?.substring(0, 5);
-    if (t) existingTimes.add(t);
-  });
-
-  let assignedMinutes;
-
-  if (currentHour >= 10 && currentHour < 14) {
-    assignedMinutes = Math.max(currentTotalMinutes, sessionStartMinutes);
-  } else if (currentHour >= 17 && currentHour < 21) {
-    assignedMinutes = Math.max(currentTotalMinutes, sessionStartMinutes);
-  } else {
-    assignedMinutes = sessionStartMinutes;
+  let existingTimes = new Set();
+  try {
+    const { data } = await supabase
+      .from("appointments")
+      .select("appointment_time")
+      .eq("appointment_date", today)
+      .gte("appointment_time", sessionStart)
+      .lt("appointment_time", sessionEnd)
+      .not("status", "in", '("cancelled","no_show")');
+    (data || []).forEach(a => {
+      const t = a.appointment_time?.substring(0, 5);
+      if (t) existingTimes.add(t);
+    });
+  } catch (e) {
+    console.warn("Failed to fetch existing appointments:", e);
   }
+
+  let assignedMinutes = Math.max(currentTotalMinutes, sessionStartMinutes);
 
   if (assignedMinutes % 30 !== 0) {
     assignedMinutes = Math.ceil(assignedMinutes / 30) * 30;
   }
 
-  if (existingTimes.has(`${String(Math.floor(assignedMinutes / 60)).padStart(2, "0")}:${String(assignedMinutes % 60).padStart(2, "0")}`)) {
+  const fmt = (m) => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+
+  if (existingTimes.has(fmt(assignedMinutes))) {
     assignedMinutes += 30;
   }
 
-  while (assignedMinutes < sessionEndMinutes) {
-    const slotH = Math.floor(assignedMinutes / 60);
-    const slotM = assignedMinutes % 60;
-    const slotStr = `${String(slotH).padStart(2, "0")}:${String(slotM).padStart(2, "0")}`;
-    if (!existingTimes.has(slotStr)) {
-      break;
-    }
+  while (assignedMinutes < sessionEndMinutes && existingTimes.has(fmt(assignedMinutes))) {
     assignedMinutes += 30;
   }
 
@@ -582,89 +563,48 @@ export async function addWalkinPatient(patientName, patientPhone) {
     return { error: "No available slots left in this session." };
   }
 
-  const assignedH = Math.floor(assignedMinutes / 60);
-  const assignedM = assignedMinutes % 60;
-  const assignedTime = `${String(assignedH).padStart(2, "0")}:${String(assignedM).padStart(2, "0")}:00`;
-  walkinTimes.add(`${String(assignedH).padStart(2, "0")}:${String(assignedM).padStart(2, "0")}`);
-
+  const assignedTime = `${fmt(assignedMinutes)}:00`;
   const duration = clinicConfig.schedule.slotDuration;
 
-  let apptId = null;
-  let tokenNumber = null;
+  const { data: existingTokens } = await supabase
+    .from("appointments")
+    .select("token_number")
+    .eq("appointment_date", today)
+    .gte("appointment_time", sessionStart)
+    .lt("appointment_time", sessionEnd)
+    .not("status", "in", '("cancelled","no_show")')
+    .order("token_number", { ascending: false })
+    .limit(1);
+  const tokenNumber = (existingTokens?.[0]?.token_number || 0) + 1;
 
-  try {
-    const rpcPromise = supabase.rpc("book_appointment", {
-      p_patient_id: null,
-      p_service_id: null,
-      p_appointment_date: today,
-      p_appointment_time: assignedTime,
-      p_duration_minutes: duration,
-      p_consultation_type: "in_person",
-      p_patient_notes: "Walk-in patient",
-      p_payment_status: "not_required",
-      p_consultation_fee: clinicConfig.payment.consultationFee,
-      p_patient_name: patientName.trim(),
-      p_patient_phone: patientPhone || "",
-    });
+  const { data, error } = await supabase
+    .from("appointments")
+    .insert({
+      appointment_date: today,
+      appointment_time: assignedTime,
+      duration_minutes: duration,
+      consultation_type: "in_person",
+      patient_notes: "Walk-in patient",
+      status: "pending",
+      payment_status: "not_required",
+      consultation_fee: clinicConfig.payment.consultationFee,
+      start_at: new Date(`${today}T${assignedTime}`).toISOString(),
+      end_at: new Date(new Date(`${today}T${assignedTime}`).getTime() + duration * 60000).toISOString(),
+      token_number: tokenNumber,
+      patient_name: patientName.trim(),
+      patient_phone: patientPhone || "",
+    })
+    .select()
+    .single();
 
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("RPC timed out")), 8000)
-    );
-
-    const { data, error } = await Promise.race([rpcPromise, timeoutPromise]);
-
-    if (error || data?.error) {
-      throw new Error(data?.error || error?.message || "RPC failed");
-    }
-
-    apptId = data?.appointment_id;
-    tokenNumber = data?.token_number;
-  } catch (e) {
-    console.warn("Walk-in RPC failed, using direct insert fallback:", e.message);
-
-    const { data: existingTokens } = await supabase
-      .from("appointments")
-      .select("token_number")
-      .eq("appointment_date", today)
-      .gte("appointment_time", sessionStart)
-      .lt("appointment_time", sessionEnd)
-      .not("status", "in", '("cancelled","no_show")')
-      .order("token_number", { ascending: false })
-      .limit(1);
-    tokenNumber = (existingTokens?.[0]?.token_number || 0) + 1;
-
-    const { data: directData, error: insertError } = await supabase
-      .from("appointments")
-      .insert({
-        patient_id: null,
-        service_id: null,
-        appointment_date: today,
-        appointment_time: assignedTime,
-        duration_minutes: duration,
-        consultation_type: "in_person",
-        patient_notes: "Walk-in patient",
-        status: "pending",
-        payment_status: "not_required",
-        consultation_fee: clinicConfig.payment.consultationFee,
-        start_at: new Date(`${today}T${assignedTime}`).toISOString(),
-        end_at: new Date(new Date(`${today}T${assignedTime}`).getTime() + duration * 60000).toISOString(),
-        token_number: tokenNumber,
-        patient_name: patientName.trim(),
-        patient_phone: patientPhone || "",
-      })
-      .select()
-      .single();
-
-    if (insertError) {
-      return { error: insertError.message || "Failed to add walk-in patient." };
-    }
-    apptId = directData?.id;
+  if (error) {
+    return { error: error.message || "Failed to add walk-in patient." };
   }
 
   return {
     success: true,
-    appointmentId: apptId,
+    appointmentId: data?.id,
     tokenNumber: tokenNumber,
-    assignedTime: `${String(assignedH).padStart(2, "0")}:${String(assignedM).padStart(2, "0")}`,
+    assignedTime: fmt(assignedMinutes),
   };
 }
