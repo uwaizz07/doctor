@@ -503,54 +503,83 @@ export async function addWalkinPatient(patientName, patientPhone) {
   const today = now.toISOString().split("T")[0];
   const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
-  const currentTime = `${String(currentHour).padStart(2, "0")}:${String(currentMinute).padStart(2, "0")}:00`;
+  const currentTotalMinutes = currentHour * 60 + currentMinute;
 
-  const session = getSessionForTime(currentTime);
-  const sessionStart = session === "morning" ? "10:00:00" : "17:00:00";
-  const sessionEnd = session === "morning" ? "14:00:00" : "21:00:00";
+  let session, sessionStart, sessionEnd, sessionStartMinutes, sessionEndMinutes;
+
+  if (currentHour >= 10 && currentHour < 14) {
+    session = "morning";
+    sessionStart = "10:00:00";
+    sessionEnd = "14:00:00";
+    sessionStartMinutes = 600;
+    sessionEndMinutes = 840;
+  } else if (currentHour >= 17 && currentHour < 21) {
+    session = "evening";
+    sessionStart = "17:00:00";
+    sessionEnd = "21:00:00";
+    sessionStartMinutes = 1020;
+    sessionEndMinutes = 1260;
+  } else if (currentHour < 10) {
+    session = "morning";
+    sessionStart = "10:00:00";
+    sessionEnd = "14:00:00";
+    sessionStartMinutes = 600;
+    sessionEndMinutes = 840;
+  } else if (currentHour >= 14 && currentHour < 17) {
+    session = "evening";
+    sessionStart = "17:00:00";
+    sessionEnd = "21:00:00";
+    sessionStartMinutes = 1020;
+    sessionEndMinutes = 1260;
+  } else {
+    return { error: "Clinic is closed. Morning: 10 AM - 1:30 PM, Evening: 5 PM - 8:30 PM." };
+  }
 
   const { data: existingAppts } = await supabase
     .from("appointments")
-    .select("appointment_time, patient_name")
+    .select("appointment_time")
     .eq("appointment_date", today)
     .gte("appointment_time", sessionStart)
     .lt("appointment_time", sessionEnd)
     .not("status", "in", '("cancelled","no_show")')
     .order("appointment_time", { ascending: true });
 
-  const currentTotalMinutes = currentHour * 60 + currentMinute;
-  let assignedMinutes = currentTotalMinutes;
-
   const existingTimes = new Set();
-  const walkinTimes = new Set();
   (existingAppts || []).forEach(a => {
     const t = a.appointment_time?.substring(0, 5);
     if (t) existingTimes.add(t);
   });
 
-  const isExactSlotTaken = existingTimes.has(
-    `${String(Math.floor(assignedMinutes / 60)).padStart(2, "0")}:${String(assignedMinutes % 60).padStart(2, "0")}`
-  );
+  let assignedMinutes;
 
-  if (isExactSlotTaken) {
+  if (currentHour >= 10 && currentHour < 14) {
+    assignedMinutes = Math.max(currentTotalMinutes, sessionStartMinutes);
+  } else if (currentHour >= 17 && currentHour < 21) {
+    assignedMinutes = Math.max(currentTotalMinutes, sessionStartMinutes);
+  } else {
+    assignedMinutes = sessionStartMinutes;
+  }
+
+  if (assignedMinutes % 30 !== 0) {
     assignedMinutes = Math.ceil(assignedMinutes / 30) * 30;
   }
 
-  const sessionStartMinutes = session === "morning" ? 600 : 1020;
-  const sessionEndMinutes = session === "morning" ? 840 : 1260;
+  if (existingTimes.has(`${String(Math.floor(assignedMinutes / 60)).padStart(2, "0")}:${String(assignedMinutes % 60).padStart(2, "0")}`)) {
+    assignedMinutes += 30;
+  }
 
   while (assignedMinutes < sessionEndMinutes) {
     const slotH = Math.floor(assignedMinutes / 60);
     const slotM = assignedMinutes % 60;
     const slotStr = `${String(slotH).padStart(2, "0")}:${String(slotM).padStart(2, "0")}`;
-    if (!existingTimes.has(slotStr) && !walkinTimes.has(slotStr)) {
+    if (!existingTimes.has(slotStr)) {
       break;
     }
     assignedMinutes += 30;
   }
 
   if (assignedMinutes >= sessionEndMinutes) {
-    return { error: "No available slots left in this session for walk-in patients." };
+    return { error: "No available slots left in this session." };
   }
 
   const assignedH = Math.floor(assignedMinutes / 60);
