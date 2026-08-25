@@ -13,6 +13,7 @@ export default defineConfig({
         contact: 'contact.html',
         login: 'login.html',
         book: 'book.html',
+        walkin: 'walkin.html',
         queue: 'queue.html',
         'admin-index': 'admin/index.html',
         'admin-appointments': 'admin/appointments.html',
