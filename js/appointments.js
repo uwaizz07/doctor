@@ -593,7 +593,7 @@ export async function addWalkinPatient(patientName, patientPhone) {
   let tokenNumber = null;
 
   try {
-    const { data, error } = await supabase.rpc("book_appointment", {
+    const rpcPromise = supabase.rpc("book_appointment", {
       p_patient_id: null,
       p_service_id: null,
       p_appointment_date: today,
@@ -607,50 +607,58 @@ export async function addWalkinPatient(patientName, patientPhone) {
       p_patient_phone: patientPhone || "",
     });
 
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("RPC timed out")), 8000)
+    );
+
+    const { data, error } = await Promise.race([rpcPromise, timeoutPromise]);
+
     if (error || data?.error) {
-      const { data: existingTokens } = await supabase
-        .from("appointments")
-        .select("token_number")
-        .eq("appointment_date", today)
-        .gte("appointment_time", sessionStart)
-        .lt("appointment_time", sessionEnd)
-        .not("status", "in", '("cancelled","no_show")')
-        .order("token_number", { ascending: false })
-        .limit(1);
-      tokenNumber = (existingTokens?.[0]?.token_number || 0) + 1;
-
-      const { data: directData, error: insertError } = await supabase
-        .from("appointments")
-        .insert({
-          patient_id: null,
-          service_id: null,
-          appointment_date: today,
-          appointment_time: assignedTime,
-          duration_minutes: duration,
-          consultation_type: "in_person",
-          patient_notes: "Walk-in patient",
-          status: "pending",
-          payment_status: "not_required",
-          consultation_fee: clinicConfig.payment.consultationFee,
-          start_at: new Date(`${today}T${assignedTime}`).toISOString(),
-          end_at: new Date(new Date(`${today}T${assignedTime}`).getTime() + duration * 60000).toISOString(),
-          token_number: tokenNumber,
-          patient_name: patientName.trim(),
-          patient_phone: patientPhone || "",
-        })
-        .select()
-        .single();
-
-      if (insertError) {
-        return { error: insertError.message || "Failed to add walk-in patient." };
-      }
-      apptId = directData?.id;
-    } else {
-      apptId = data?.appointment_id;
-      tokenNumber = data?.token_number;
+      throw new Error(data?.error || error?.message || "RPC failed");
     }
+
+    apptId = data?.appointment_id;
+    tokenNumber = data?.token_number;
   } catch (e) {
-    return { error: e.message || "Failed to add walk-in patient." };
+    console.warn("Walk-in RPC failed, using direct insert fallback:", e.message);
+
+    const { data: existingTokens } = await supabase
+      .from("appointments")
+      .select("token_number")
+      .eq("appointment_date", today)
+      .gte("appointment_time", sessionStart)
+      .lt("appointment_time", sessionEnd)
+      .not("status", "in", '("cancelled","no_show")')
+      .order("token_number", { ascending: false })
+      .limit(1);
+    tokenNumber = (existingTokens?.[0]?.token_number || 0) + 1;
+
+    const { data: directData, error: insertError } = await supabase
+      .from("appointments")
+      .insert({
+        patient_id: null,
+        service_id: null,
+        appointment_date: today,
+        appointment_time: assignedTime,
+        duration_minutes: duration,
+        consultation_type: "in_person",
+        patient_notes: "Walk-in patient",
+        status: "pending",
+        payment_status: "not_required",
+        consultation_fee: clinicConfig.payment.consultationFee,
+        start_at: new Date(`${today}T${assignedTime}`).toISOString(),
+        end_at: new Date(new Date(`${today}T${assignedTime}`).getTime() + duration * 60000).toISOString(),
+        token_number: tokenNumber,
+        patient_name: patientName.trim(),
+        patient_phone: patientPhone || "",
+      })
+      .select()
+      .single();
+
+    if (insertError) {
+      return { error: insertError.message || "Failed to add walk-in patient." };
+    }
+    apptId = directData?.id;
   }
 
   return {
