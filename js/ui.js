@@ -174,12 +174,12 @@ export function updateNavAuth(user, profile) {
     const isAdmin = profile.role === 'doctor' || profile.role === 'admin';
     navAuth.innerHTML = `
       ${isAdmin ? '<a href="/admin/index.html" class="text-gray-700 hover:text-blue-600 transition-colors text-sm font-medium">Admin</a>' : ''}
-      <button onclick="import('./js/auth.js').then(m => m.logoutUser())" class="text-gray-700 hover:text-red-600 transition-colors text-sm font-medium">Logout</button>
+      <button onclick="import('/js/auth.js').then(m => m.logoutUser())" class="text-gray-700 hover:text-red-600 transition-colors text-sm font-medium">Logout</button>
     `;
     if (navAuthMobile) {
       navAuthMobile.innerHTML = `
         ${isAdmin ? '<a href="/admin/index.html" class="block px-4 py-2 text-gray-700 bg-gray-100 hover:bg-blue-50 rounded-lg">Admin</a>' : ''}
-        <button onclick="import('./js/auth.js').then(m => m.logoutUser())" class="block w-full text-left px-4 py-2 text-red-600 bg-gray-100 hover:bg-red-50 rounded-lg">Logout</button>
+        <button onclick="import('/js/auth.js').then(m => m.logoutUser())" class="block w-full text-left px-4 py-2 text-red-600 bg-gray-100 hover:bg-red-50 rounded-lg">Logout</button>
       `;
     }
   } else {
