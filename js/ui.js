@@ -178,8 +178,8 @@ export function updateNavAuth(user, profile) {
     `;
     if (navAuthMobile) {
       navAuthMobile.innerHTML = `
-        ${isAdmin ? '<a href="/admin/index.html" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-lg">Admin</a>' : ''}
-        <button onclick="import('./js/auth.js').then(m => m.logoutUser())" class="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg">Logout</button>
+        ${isAdmin ? '<a href="/admin/index.html" class="block px-4 py-2 text-gray-700 bg-gray-100 hover:bg-blue-50 rounded-lg">Admin</a>' : ''}
+        <button onclick="import('./js/auth.js').then(m => m.logoutUser())" class="block w-full text-left px-4 py-2 text-red-600 bg-gray-100 hover:bg-red-50 rounded-lg">Logout</button>
       `;
     }
   } else {
