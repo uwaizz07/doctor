@@ -103,16 +103,11 @@ export async function createAppointment({
       if (error || data?.error) {
       if (data?.error) return { error: data.error };
       // Try direct insert fallback
-      // Compute session-aware token_number for fallback path
-      const session = getSessionForTime(formattedTime);
-      const sessionStart = session === "morning" ? "10:00" : "17:00";
-      const sessionEnd = session === "morning" ? "14:00" : "21:00";
+      // Compute token_number (whole-day daily sequence) for fallback path
       const { data: existingTokens } = await supabase
         .from("appointments")
         .select("token_number")
         .eq("appointment_date", appointmentDate)
-        .gte("appointment_time", sessionStart)
-        .lt("appointment_time", sessionEnd)
         .not("status", "in", '("cancelled","no_show")')
         .order("token_number", { ascending: false })
         .limit(1);
@@ -570,8 +565,6 @@ export async function addWalkinPatient(patientName, patientPhone) {
     .from("appointments")
     .select("token_number")
     .eq("appointment_date", today)
-    .gte("appointment_time", sessionStart)
-    .lt("appointment_time", sessionEnd)
     .not("status", "in", '("cancelled","no_show")')
     .order("token_number", { ascending: false })
     .limit(1);
