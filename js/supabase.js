@@ -90,3 +90,11 @@ export async function requireRole(role) {
   }
   return profile;
 }
+
+document.addEventListener('click', async (e) => {
+  const btn = e.target.closest('[data-logout]');
+  if (!btn) return;
+  e.preventDefault();
+  await supabase.auth.signOut();
+  window.location.href = '/login.html';
+});
